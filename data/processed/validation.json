@@ -1,0 +1,14 @@
+{
+  "input_rows": 7582963,
+  "under_16": 1411288,
+  "invalid_status_age16plus": 25129,
+  "invalid_weight_eligible": 0,
+  "included_person_months": 6146546,
+  "months": 72,
+  "minimum_monthly_population": 258239487.01730037,
+  "maximum_monthly_population": 269637916.00549972,
+  "minimum_fine_band_sample_n": 3604,
+  "source_sha256": "e82ec1eee915ab477ed48d18d2f9b319618cf359cae4539d24982c07870c9fcd",
+  "R_version": "R version 4.5.3 (2026-03-11)",
+  "checks": "72 complete months; valid rates; broad/fine totals reconcile; 2019 standardization identity; plausible weight scale"
+}

@@ -1,0 +1,70 @@
+---
+format:
+  html:
+    embed-resources: true
+    theme: readable
+    toc: false
+params:
+  recompute: true
+---
+
+```{r setup, include=FALSE}
+# Render recomputes all figures and tables from the raw CPS data.
+ROOT <- normalizePath("..")
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+if (isTRUE(params$recompute)) source(file.path(ROOT, "code/analyze.R"), encoding = "UTF-8")
+overall <- read.csv(file.path(ROOT, "data/processed/annual_overall.csv"), check.names = FALSE)
+changes <- read.csv(file.path(ROOT, "data/processed/changes_2019_2024.csv"), check.names = FALSE, fileEncoding = "UTF-8")
+audit <- jsonlite::read_json(file.path(ROOT, "data/processed/validation.json"), simplifyVector = TRUE)
+at <- function(group, column) changes[changes$group == group, column]
+yr <- function(year, column) overall[overall$YEAR == year, column]
+values <- list(person_months = format(audit$included_person_months, big.mark = ",", scientific = FALSE, trim = TRUE),
+  age35_end = at("35–44", "2024"), age35_start = at("35–44", "2019"),
+  old_end = at("65+", "2024"), old_start = at("65+", "2019"),
+  age35_change = at("35–44", "change_pp"), age45_change = at("45–54", "change_pp"),
+  age55_change = at("55–64", "change_pp"), young_change = at("16–24", "change_pp"),
+  old_decline = -at("65+", "change_pp"), overall_start = yr(2019, "actual_pct"),
+  overall_end = yr(2024, "actual_pct"), old_share_start = yr(2019, "share_65plus_pct"),
+  old_share_end = yr(2024, "share_65plus_pct"), fixed_end = yr(2024, "fixed_age_pct"),
+  fixed_gain = yr(2024, "fixed_age_pct") - yr(2019, "actual_pct"),
+  composition_gap = yr(2024, "fixed_age_pct") - yr(2024, "actual_pct"))
+fmt <- function(x) if (is.numeric(x)) sprintf("%.2f", x) else x
+```
+
+# Why an Older America Can Have a Lower Participation Rate Even as Many Age Groups Recover
+
+Did Americans return to the labor force after the pandemic? The answer depends on which Americans we examine. Using IPUMS CPS microdata, I ask how labor-force participation changed across age groups between 2019 and 2024, and how much the changing age mix matters for the overall comparison. This distinction matters because a lower national participation rate can reflect both changes within age groups and a larger population share in groups that participate less.
+
+## Measuring participation
+
+I use all 72 Basic Monthly CPS samples from 2019–2024, restricting the analysis to civilians aged 16 and older with valid labor-force status and positive weights. The resulting sample contains `r fmt(values$person_months)` person-month observations, not that many distinct people. [LABFORCE](https://cps.ipums.org/cps-action/variables/LABFORCE) identifies people who are employed or unemployed and in the labor force; participation is therefore different from employment.
+
+For each month and age group, I divide the sum of [WTFINL](https://cps.ipums.org/cps-action/variables/WTFINL) weights among labor-force participants by the sum among everyone in that group, then multiply by 100. Each annual estimate is the simple average of its twelve monthly rates. Weighting allows the sample to describe the U.S. civilian noninstitutional population. These estimates are not seasonally adjusted. They also need not equal published BLS figures, which use [composite weights](https://cps.ipums.org/cps-action/variables/COMPWT).
+
+## A recovery that differed by age
+
+![Figure 1. Annual weighted labor-force participation rates for six age groups, 2019–2024.](../figures/figure1_age_trends.png)
+
+Figure 1 shows a decline in every age group in 2020, followed by different recovery paths. By 2024, participation among people aged 35–44 reached `r fmt(values$age35_end)`%, compared with `r fmt(values$age35_start)`% in 2019. Participation among those aged 65 and older was `r fmt(values$old_end)`%, still below its `r fmt(values$old_start)`% starting point. Several groups reached their lowest annual rate in 2021, showing why a single pandemic-year comparison would miss part of the adjustment.
+
+The panels use separate vertical scales to make changes visible. Their levels also differ greatly: participation among those aged 35–44 is much higher than among those aged 65+. That difference becomes important when interpreting the national average.
+
+![Figure 2. Percentage-point changes in weighted participation rates between 2019 and 2024.](../figures/figure2_changes.png)
+
+Figure 2 isolates the endpoint comparison. The largest increase among these groups was for ages 35–44, at `r fmt(values$age35_change)` percentage points. Ages 45–54 and 55–64 rose by `r fmt(values$age45_change)` and `r fmt(values$age55_change)` points, respectively. Ages 16–24 were close to their starting level, increasing just `r fmt(values$young_change)` points. In contrast, the 65+ group declined by `r fmt(values$old_decline)` points. These are differences in point estimates, not claims of statistical significance. Nor does the older group's decline establish that particular individuals retired: the people comprising an age group change over time.
+
+## The age mix changes the national story
+
+![Figure 3. Actual and age-standardized participation rates, alongside the population share aged 65+.](../figures/figure3_age_composition.png)
+
+Overall participation fell from `r fmt(values$overall_start)`% in 2019 to `r fmt(values$overall_end)`% in 2024. How can that coexist with increases in five of six groups? Figure 3 shows that people aged 65+ grew from `r fmt(values$old_share_start)`% to `r fmt(values$old_share_end)`% of the population aged 16+. Giving more weight to a group with a low participation rate can lower the national average even when many group-specific rates rise.
+
+To separate these patterns, I also calculate a standardized series using fourteen narrower age bands. Each month's age-specific rates are combined with the age shares from the same calendar month in 2019. With that age structure held fixed, the 2024 rate is `r fmt(values$fixed_end)`%, or `r fmt(values$fixed_gain)` points above 2019. The `r fmt(values$composition_gap)`-point gap between standardized and actual participation summarizes the age-composition difference evaluated at 2024 participation rates.
+
+This is an accounting exercise, not a causal estimate of aging or the pandemic. Changes within the narrow bands remain, and [pandemic-related nonresponse](https://cps.ipums.org/cps/covid19.shtml) may affect comparisons. The CPS also interviews some people repeatedly, so I do not treat all person-months as independent observations or report naive confidence intervals.
+
+**The takeaway:** by 2024, participation had surpassed its 2019 level for several working-age groups, while the overall rate remained lower. Assessing labor-market recovery requires looking at both age-specific participation and the population's changing age composition.
+
+---
+
+*Data source: IPUMS CPS, University of Minnesota, [cps.ipums.org](https://cps.ipums.org/cps/), Basic Monthly samples, January 2019–December 2024; extract downloaded September 24, 2026. Underlying CPS data are provided by the U.S. Census Bureau and Bureau of Labor Statistics. All figures and numerical results are calculated from the microdata. See the accompanying README for extraction details and replication commands.*

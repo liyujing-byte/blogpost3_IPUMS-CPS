@@ -1,0 +1,18 @@
+{
+  "provider": "IPUMS CPS, University of Minnesota",
+  "underlying_sources": ["U.S. Census Bureau", "U.S. Bureau of Labor Statistics"],
+  "download_date": "2026-09-24",
+  "sample_type": "Cross-sectional Basic Monthly",
+  "years_inclusive": [2019, 2024],
+  "months_each_year": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  "sample_count": 72,
+  "asec_samples": false,
+  "selected_variables": ["AGE", "LABFORCE"],
+  "automatically_included_variables": ["YEAR", "SERIAL", "MONTH", "HWTFINL", "CPSID", "ASECFLAG", "PERNUM", "WTFINL", "CPSIDP", "CPSIDV"],
+  "case_selection_at_download": "None; all cases downloaded, analytic restrictions applied in code",
+  "file_structure": "Rectangular, person records",
+  "format": "CSV, gzip-compressed",
+  "weight_used": "WTFINL, already decimal-adjusted in this CSV",
+  "source_file": "cps_00001.csv.gz",
+  "source_sha256": "e82ec1eee915ab477ed48d18d2f9b319618cf359cae4539d24982c07870c9fcd"
+}
