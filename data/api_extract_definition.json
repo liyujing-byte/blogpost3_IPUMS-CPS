@@ -1,0 +1,9 @@
+{
+  "collection": "cps",
+  "samples": ["cps2019_01s", "cps2019_02s", "cps2019_03b", "cps2019_04b", "cps2019_05s", "cps2019_06s", "cps2019_07s", "cps2019_08s", "cps2019_09s", "cps2019_10s", "cps2019_11s", "cps2019_12s", "cps2020_01s", "cps2020_02s", "cps2020_03b", "cps2020_04b", "cps2020_05b", "cps2020_06s", "cps2020_07b", "cps2020_08s", "cps2020_09b", "cps2020_10s", "cps2020_11s", "cps2020_12s", "cps2021_01b", "cps2021_02s", "cps2021_03b", "cps2021_04b", "cps2021_05b", "cps2021_06s", "cps2021_07s", "cps2021_08s", "cps2021_09s", "cps2021_10s", "cps2021_11s", "cps2021_12s", "cps2022_01s", "cps2022_02s", "cps2022_03b", "cps2022_04s", "cps2022_05s", "cps2022_06s", "cps2022_07s", "cps2022_08s", "cps2022_09s", "cps2022_10s", "cps2022_11s", "cps2022_12s", "cps2023_01s", "cps2023_02s", "cps2023_03b", "cps2023_04b", "cps2023_05s", "cps2023_06s", "cps2023_07s", "cps2023_08s", "cps2023_09s", "cps2023_10s", "cps2023_11s", "cps2023_12s", "cps2024_01s", "cps2024_02b", "cps2024_03b", "cps2024_04b", "cps2024_05b", "cps2024_06s", "cps2024_07s", "cps2024_08s", "cps2024_09s", "cps2024_10s", "cps2024_11s", "cps2024_12s"],
+  "variables": ["YEAR", "SERIAL", "MONTH", "HWTFINL", "CPSID", "ASECFLAG", "PERNUM", "WTFINL", "CPSIDP", "CPSIDV", "AGE", "LABFORCE"],
+  "data_format": "csv",
+  "data_structure": "rectangular",
+  "rectangular_on": "P",
+  "case_selection": "none"
+}

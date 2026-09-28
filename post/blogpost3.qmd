@@ -67,4 +67,4 @@ This is an accounting exercise, not a causal estimate of aging or the pandemic. 
 
 ---
 
-*Data source: IPUMS CPS, University of Minnesota, [cps.ipums.org](https://cps.ipums.org/cps/), Basic Monthly samples, January 2019–December 2024; extract downloaded September 24, 2026. Underlying CPS data are provided by the U.S. Census Bureau and Bureau of Labor Statistics. All figures and numerical results are calculated from the microdata. See the accompanying README for extraction details and replication commands.*
+*Data source: IPUMS CPS, University of Minnesota, [cps.ipums.org](https://cps.ipums.org/cps/), Basic Monthly samples, January 2019–December 2024; extract downloaded on `r audit$download_date` via the `r audit$acquisition_method`. Underlying CPS data are provided by the U.S. Census Bureau and Bureau of Labor Statistics. All figures and numerical results are calculated from the microdata. See the accompanying README for extraction details and replication commands.*

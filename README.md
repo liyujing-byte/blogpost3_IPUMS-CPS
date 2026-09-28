@@ -7,11 +7,11 @@ All data cleaning, weighted calculations, tables, figures and post generation ar
 ## Start in RStudio
 
 1. Open `blogpost3_all_process.Rproj` in RStudio. This sets the project working directory.
-2. Put the original compressed IPUMS CSV in `data/raw/cps_00001.csv.gz`. Leave it compressed. Raw microdata are excluded from this repository; follow the extraction instructions below to obtain them.
+2. Configure your personal IPUMS API key locally as described below. `run.R` now requests and downloads the data through the API before analysis. Raw microdata and credentials are excluded from Git.
 3. If necessary, install these packages in the RStudio Console:
 
 ```r
-install.packages(c("data.table", "ggplot2", "jsonlite", "digest", "rmarkdown", "knitr"))
+install.packages(c("data.table", "ggplot2", "jsonlite", "digest", "rmarkdown", "knitr", "ipumsr"))
 ```
 
 4. Run:
@@ -28,11 +28,51 @@ To follow the analysis line by line, open `code/analyze.R`, set `ROOT <- normali
 
 The introductory `code/01_import_check.R` script additionally uses `R.utils` to read gzip files directly. The complete `run.R` workflow uses base R decompression and does not require it.
 
+## Personal API setup (local only)
+
+Your IPUMS account must have access to CPS. Obtain your own key at
+<https://account.ipums.org/api_keys>. Never paste a real key into an R script,
+GitHub, a screenshot, or a chat.
+
+In the project RStudio Console, open the local environment file:
+
+```r
+file.edit(".Renviron")
+```
+
+Add this line in the editor, replacing the placeholder with your actual key, and save:
+
+```text
+IPUMS_API_KEY=YOUR_PERSONAL_KEY
+```
+
+The downloader reads this file automatically, so no restart is required. It never
+prints the key. `.Renviron` and its backups are ignored by Git.
+
+Run `source("run.R", encoding = "UTF-8")` to submit the 72 Basic Monthly samples,
+wait, download the CSV and codebook, then recompute and render. The new files go to
+`data/raw/api/`; the original website download is preserved. The request number
+is saved immediately, so an interrupted run can resume. A completion receipt
+records the actual download date and SHA-256. Later runs reuse the verified API
+file instead of making another extract. To intentionally request a new extract,
+move `data/raw/api/` to a backup location first.
+
+To download only: `source("code/00_download_api.R", encoding = "UTF-8")`.
+Direct Quarto Render does not submit API requests: it uses the completed API
+file if present, otherwise the original web download. The authenticated API extract was downloaded and the full analysis rerun on
+September 27, 2026. All six aggregate tables matched the original web-download
+results exactly. The original `data/extract_specification.json` describes the
+September 24 web extract; the API receipt describes the subsequent download.
+The Quarto blog reads the acquisition method and date from the analysis audit automatically. Republish only after verifying new results.
+
+Official workflow: <https://tech.popdata.org/ipumsr/articles/ipums-api.html>.
+
 ## Files
 
 ```text
 blogpost3_all_process.Rproj              RStudio project
 run.R                       Run analysis and render the post
+code/00_download_api.R      Authenticated API request and download
 code/analyze.R              Read, filter, weight, aggregate and plot
 post/blogpost3.qmd          Render-ready Quarto document
 post/blogpost3.html          Generated self-contained HTML

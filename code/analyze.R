@@ -3,6 +3,14 @@ library(data.table)
 library(ggplot2)
 if (!exists("ROOT")) ROOT <- normalizePath(".")
 input <- file.path(ROOT, "data/raw/cps_00001.csv.gz")
+# Prefer only a completed API download; retain the original web extract as fallback
+# for standalone Render until the first API download is complete.
+receipt_file <- file.path(ROOT, "data/raw/api/receipt.json")
+if (file.exists(receipt_file)) {
+  receipt <- jsonlite::read_json(receipt_file, simplifyVector = TRUE)
+  input <- file.path(ROOT, "data/raw/api", receipt$file)
+  stopifnot(file.exists(input), identical(digest::digest(file = input, algo = "sha256"), receipt$sha256))
+}
 stopifnot(file.exists(input))
 dir.create(file.path(ROOT, "data/processed"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(ROOT, "figures"), recursive = TRUE, showWarnings = FALSE)
@@ -80,6 +88,8 @@ audit$minimum_monthly_population <- min(monthly$population)
 audit$maximum_monthly_population <- max(monthly$population)
 audit$minimum_fine_band_sample_n <- min(fine$n)
 audit$source_sha256 <- digest::digest(file = input, algo = "sha256")
+audit$acquisition_method <- if (file.exists(receipt_file)) "IPUMS API" else "IPUMS website"
+audit$download_date <- if (file.exists(receipt_file)) receipt$downloaded_on else "2026-09-24"
 audit$R_version <- R.version.string
 audit$checks <- "72 complete months; valid rates; broad/fine totals reconcile; 2019 standardization identity; plausible weight scale"
 jsonlite::write_json(audit, file.path(ROOT, "data/processed/validation.json"), pretty = TRUE, auto_unbox = TRUE, digits = 15)
